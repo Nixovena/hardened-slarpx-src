@@ -18,9 +18,10 @@ esac
 ## Write to '/run/initramfs' folder.
 ## https://forums.whonix.org/t/kernel-hardening/7296/435
 
-sysctl -p ${rootmnt}/etc/sysctl.conf >/dev/null 2> "/run/initramfs/sysctl-initramfs-error.log"
-sysctl -p ${rootmnt}/etc/sysctl.d/*.conf >/dev/null 2>> "/run/initramfs/sysctl-initramfs-error.log"
+## Note: /etc/sysctl.conf is not used — all configuration resides in /etc/sysctl.d/
+sysctl -p ${rootmnt}/etc/sysctl.d/*.conf >/dev/null 2> "/run/initramfs/sysctl-initramfs-error.log"
 
-grep -v "unprivileged_userfaultfd" "/run/initramfs/sysctl-initramfs-error.log"
+## Filter out known harmless warnings (IPv6 disabled at kernel level, unprivileged_userfaultfd)
+grep -v -E "unprivileged_userfaultfd|No such file or directory" "/run/initramfs/sysctl-initramfs-error.log" || true
 
 true
